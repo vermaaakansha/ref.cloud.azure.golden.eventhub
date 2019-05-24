@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters":{
+        "primaryEventHubNamespaceName": {
+          "type" : "string"
+        },
+        "primaryLocation": {
+          "type" : "string"
+        },
+        "secondaryEventHubNamespaceId": {
+          "type" : "string"
+        },
+        "aliasName": {
+          "type" : "string"
+        }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.EventHub/namespaces/disasterRecoveryConfigs",
+          "apiVersion": "2017-04-01",
+          "name": "[concat(parameters('primaryEventHubNamespaceName'), '/', parameters('aliasName'))]",
+          "location": "[parameters('primaryLocation')]",
+          
+          "properties": {
+            "partnerNamespace": "[parameters('secondaryEventHubNamespaceId')]"
+          }
+        }
+      ],
+      "outputs": { }
+  }

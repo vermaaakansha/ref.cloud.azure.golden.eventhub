@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "eventhubNamespaceName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Event Hubs namespace"
+        }
+      },
+      "subnetId": {
+        "type": "string",
+        "metadata": {
+          "description": "ID of the subnet which have service endpoint"
+        }
+      },
+      "iprule": {
+        "type": "string",
+        "metadata": {
+          "description": "IP of the which you want to allow"
+        }
+      }
+    },
+
+    "variables": {
+      "namespaceNetworkRuleSetName": "[concat(parameters('eventhubNamespaceName'), concat('/', 'default'))]" 
+    },
+    "resources": [
+      {
+        "apiVersion": "2017-04-01",
+        "name": "[variables('namespaceNetworkRuleSetName')]",
+        "type": "Microsoft.EventHub/Namespaces/NetworkRuleSet",
+        "properties": {
+          "virtualNetworkRules": 
+          [
+            {
+              "subnet": {
+                "id": "[parameters('subnetId')]"
+              },
+              "ignoreMissingVnetServiceEndpoint": false
+            }
+          ],
+          "ipRules": [
+            {
+              "ipMask": "[if(equals(parameters('iprule'), ''), '255.255.255.255', parameters('iprule'))]",
+              "action": "Allow"
+            }
+          ],
+          "defaultAction": "Deny"
+        }
+      }
+    ],
+    "outputs": { }
+  }
